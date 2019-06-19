@@ -1,0 +1,13 @@
+
+<van-search value="{{ value }}" shape="round" placeholder="书名或者ISBN" bind:search="onSearch" use-action-slot='true' >
+ <view slot="action" bind:tap="searchByCode"><van-icon name="scan" color="green" size="1.3em"/></view>
+</van-search>
+<view class="search-result" wx:for="{{searchResult}}" wx:key="{{index}}">
+  <van-card title="{{item.name}}" thumb="{{item.coverUrl}}" bind:tap="showImage" data-url="{{item.coverUrl}}">
+ <view class="book-des van-multi-ellipsis--l2" slot="desc">{{item.description}}</view>
+   <view class="card-bottom" slot="bottom">
+   <p><text>\n{{item.author}}  {{item.publisher}}  {{item.pubdate}}</text></p>
+  </view>
+  </van-card>
+</view>
+
