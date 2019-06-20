@@ -4,10 +4,10 @@
 </van-search>
 <view class="search-result" wx:for="{{searchResult}}" wx:key="{{index}}">
   <van-card title="{{item.name}}" thumb="{{item.coverUrl}}" bind:tap="showImage" data-url="{{item.coverUrl}}">
- <view class="book-des van-multi-ellipsis--l2" slot="desc">{{item.description}}</view>
-   <view class="card-bottom" slot="bottom">
-   <p><text>\n{{item.author}}  {{item.publisher}}  {{item.pubdate}}</text></p>
-  </view>
+   <view class="book-des van-multi-ellipsis--l2" slot="desc">{{item.description}}</view>
+     <view class="card-bottom" slot="bottom">
+     <p><text>\n{{item.author}}  {{item.publisher}}  {{item.pubdate}}</text></p>
+   </view>
   </van-card>
 </view>
 
