@@ -1,7 +1,7 @@
 /* pages/search/search.wxss */
 .search-result .card-bottom{
   color: #333;
-  font-size: 28rpx;
+  font-size: 24rpx;
 }
 .book-des{
   color: #aaa;
