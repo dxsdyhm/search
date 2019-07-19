@@ -1,0 +1,2 @@
+<canvas style="width: 750rpx;height: 750rpx;background:#f1f1f1;" canvas-id="mycanvas"/>
+<text class='qrcodetip'>请将二维码放置到设备正前方，如果设备不能识别，请在设备面前小幅度移动手机</text>

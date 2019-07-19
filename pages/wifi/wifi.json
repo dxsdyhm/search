@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "选择Wi-Fi",
+  "usingComponents": {
+    "van-field": "vant-weapp/field/index",
+    "van-button": "vant-weapp/button/index",
+    "van-popup": "vant-weapp/popup/index",
+    "van-checkbox": "vant-weapp/checkbox/index",
+    "van-row": "vant-weapp/row/index",
+    "van-col": "vant-weapp/col/index"
+  }
+}

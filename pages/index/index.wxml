@@ -1,11 +1,6 @@
 <!--index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-  </view>
- <van-button class="search-button" type="primary" bindtap="toSearch" >进入搜索</van-button>
+<view class='container'>
+  <text class='tips'>小精灵设备查询绘本支持与网络配置工具</text>
+  <button type="primary" bindtap="toSearch" class='btn'>搜索</button>
+  <button type="primary" bindtap="toNetConfig" class='btn'>配网</button>
 </view>

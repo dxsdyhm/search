@@ -1,0 +1,10 @@
+/* pages/wifi/wifi.wxss */
+.btn {
+  margin: 0rpx 32rpx;
+}
+.wificard {
+  padding: 5rpx;
+}
+.checkbund{
+  margin: 0rpx 32rpx;
+}

@@ -1,10 +1,8 @@
-.tips{
-  font-size: 14px;
+/* pages/qrcode/qrcode.wxss */
+.qrcodetip{
+  font-size: 12px;
   text-align: center;
   display: table-cell;
   vertical-align:middle;
   padding: 0rpx 32rpx;
-}
-.btn{
-  margin: 16rpx;
 }

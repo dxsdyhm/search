@@ -54,5 +54,10 @@ Page({
     wx.navigateTo({
       url: '../search/search'
     })
+  },
+  toNetConfig(){
+    wx.navigateTo({
+      url: '../wifi/wifi'
+    })
   }
 })

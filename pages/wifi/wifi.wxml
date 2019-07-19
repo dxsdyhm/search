@@ -1,0 +1,18 @@
+<view class='container'>
+  <van-cell-group>
+    <van-field value="{{ currenwifi }}" placeholder="Wi-Fi名" left-icon="contact" border="{{ false }}" icon="info-o" bind:change="onSSIDChange" bind:click-icon="getAllWifiOn" />
+    <van-field value="{{ pwd }}" placeholder="请输入Wi-Fi密码" left-icon="contact" border="{{ false }}" bind:change="onPwdChange" />
+  </van-cell-group>
+  <van-row>
+    <van-col offset="16" span="8">
+      <van-checkbox value="{{ bind }}" bind:change="changbind" class='checkbund'>绑定设备</van-checkbox>
+    </van-col>
+  </van-row>
+  <button class='btn' type="primary" bindtap="toQrcode">配网</button>
+  <van-field value="{{ code }}" border="{{ true }}" />
+  <van-popup show="{{ showwifis }}" bind:close="onClose">
+    <view class='wificard'>
+      <view wx:for="{{wifiList}}" wx:key="item.SSID" wx:for-item="item" bindtap='select' data-wifi='{{item.SSID}}'>{{item.SSID}}</view>
+    </view>
+  </van-popup>
+</view>

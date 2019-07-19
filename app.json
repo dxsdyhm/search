@@ -1,8 +1,10 @@
 {
   "pages": [
-    "pages/search/search",
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/wifi/wifi",
+    "pages/search/search",
+    "pages/logs/logs",
+    "pages/qrcode/qrcode"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -10,5 +12,10 @@
     "navigationBarTitleText": "绘本查询",
     "navigationBarTextStyle": "black"
   },
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "要获取周围可用的Wi-Fi，系统需要你的定位权限"
+    }
+  }
 }

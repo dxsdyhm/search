@@ -34,6 +34,11 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    netconfig:{
+      s:'',
+      p:'',
+      u:''
+    }
   }
 })
