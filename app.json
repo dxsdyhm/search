@@ -1,9 +1,8 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/wifi/wifi",
+    "pages/index/index",
     "pages/search/search",
-    "pages/logs/logs",
     "pages/qrcode/qrcode"
   ],
   "window": {

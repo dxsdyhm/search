@@ -11,7 +11,8 @@ Page({
     wifiList: [],
     showwifis:false,
     bind:false,
-    code:''
+    uid:0,
+    errormessage:''
   },
 
   /**
@@ -158,6 +159,7 @@ Page({
     this.setData({
       currenwifi: event.detail,
     })
+    this.checkwifi5g();
   },
   onPwdChange(event) {
     console.log(event.detail)
@@ -183,10 +185,38 @@ Page({
     wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        console.log(res)
-        this.setData({
-          code:res.code
+        wx.request({
+          url: 'https://api1.q-links.net:10081/app/user/getidbythirdinfo', //仅为示例，并非真实的接口地址
+          method: 'POST',
+          data: {
+            'thirdType': 2,
+            'thirdAccessCode': res.code
+          },
+          success: res => {
+            wx.hideLoading();
+            if (res.statusCode == 200) {
+              console.log(res)
+              app.globalData.netconfig.u = res.data.data.uid+'';
+              this.setData({
+                uid: res.data.uid
+              })
+              wx.navigateTo({
+                url: '../qrcode/qrcode'
+              })
+            } else {
+              this.loginfail();
+            }
+          },
+          fail: error => {
+            wx.hideLoading();
+          }
         })
+      },
+      fail:error=>{
+        //登陆失败，是否重新选择仅配网
+        //如果登陆失败是因为没有账号，则提示注册
+        wx.hideLoading();
+        this.loginfail();
       },
       complete:()=>{
         wx.hideLoading()
@@ -198,13 +228,58 @@ Page({
     app.globalData.netconfig.s = ssid;
     this.setData({
       currenwifi: ssid,
-      showwifis:false
     })
+    this.checkwifi5g();
   },
   onClose() {
     this.setData({ showwifis: false });
   },
   changbind(){
     this.setData({ bind: !this.data.bind });
+  },
+  //取信息失败引导注册
+  loginerror(){
+    wx.showModal({
+      content: '你还没有注册，是否使用此微信号注册',
+      success(res) {
+        if (res.confirm) {
+          //转入注册
+          //转入小程序登陆接口
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  //取信息失败引导仅配网
+  loginfail() {
+    wx.showModal({
+      content: '你还没有注册，是否仅配置网络?',
+      success:res=> {
+        if (res.confirm) {
+          //修改绑定选项
+          this.setData({
+            bind:false
+          })
+          wx.navigateTo({
+            url: '../qrcode/qrcode'
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  checkwifi5g(){
+    //预检5G，结果不一定准确
+    if (this.data.currenwifi.indexOf('5G')!=-1) {
+      this.setData({
+        errormessage: '设备不支持5G,当前选择的Wi-Fi有可能是5G'
+      })
+    } else {
+      this.setData({
+        errormessage: ''
+      })
+    }
   }
 })

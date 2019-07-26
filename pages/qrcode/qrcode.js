@@ -88,7 +88,6 @@ Page({
     });
   },
   createQrCode: function (content, canvasId, cavW, cavH) {
-    
     //调用插件中的draw方法，绘制二维码图片
     Qr.api.draw(content, canvasId, cavW, cavH);
     this.canvasToTempImage(canvasId);

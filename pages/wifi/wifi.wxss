@@ -3,8 +3,10 @@
   margin: 0rpx 32rpx;
 }
 .wificard {
-  padding: 5rpx;
+  height: 550rpx;
+  margin-top: 8rpx;
 }
-.checkbund{
-  margin: 0rpx 32rpx;
+.tiptext{
+  display: block;
+  margin: 32rpx 32rpx;
 }
