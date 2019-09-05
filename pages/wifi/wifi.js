@@ -9,17 +9,18 @@ Page({
     currenwifi: '',
     pwd: '',
     wifiList: [],
-    showwifis:false,
-    bind:false,
-    uid:0,
-    errormessage:''
+    showwifis: false,
+    bind: false,
+    uid: 0,
+    errormessage: '',
+    wifilisttimeout:0
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-
+    
   },
 
   /**
@@ -34,8 +35,35 @@ Page({
    */
   onShow: function() {
     wx.startWifi({
-      success:res=>{
+      success: res => {
         this.setCourentWifi();
+      },
+      fail: res => {
+        console.log(res)
+      }
+    })
+  },
+
+  checkwifiopen(){
+    wx.getNetworkType({
+      success: res=>{
+        if(res.networkType==='wifi'){
+          this.getAllWifiOn();
+        }else{
+          wx.showToast({
+            title: '请打开手机wifi',
+            icon: "warn",
+            duration: 2000
+          })
+        }
+      },
+      fail:res=>{
+        //提示用户打开手机wifi
+        wx.showToast({
+          title: '请打开手机的wifi',
+          icon: 'warn',
+          duration: 2000
+        })
       }
     })
   },
@@ -46,26 +74,50 @@ Page({
     wx.showLoading({
       title: '搜索Wi-Fi',
     })
+    //设置超时，超时结束后检查获取到的列表数量，如果为0 提示用户可能需要打开位置信息
+    if(!app.isIos()){
+      let timeid = setTimeout(() => {
+        let len = this.data.wifiList.length
+        if (len <= 0) {
+          wx.showToast({
+            title: '周围没有搜索到wifi，请打开位置信息（GPS）开关',
+          })
+        }
+      }, 6000)
+      this.setData({
+        wifilisttimeout: timeid
+      })
+    }
   },
 
-  getAllWifiOn(){
-    wx.onGetWifiList((res) => {
+  getAllWifiOn() {
+    wx.onGetWifiList(res => {
       //转圈消失，并将wifi列表设置到数据区
+      clearTimeout(this.data.wifilisttimeout)
       wx.hideLoading()
       console.log(res.wifiList)
       this.setData({
         wifiList: res.wifiList,
-        showwifis:true
+        showwifis: true
       })
     })
     wx.startWifi({
       success: res => {
         //不管能不能获取到周围wifi,都需要将当前wifi设置到
         this.setCourentWifi();
+        //如果是iOS，则不需要获取wifi列表
+        if (app.isIos()){
+          wx.showToast({
+            title: '系统不可获取wifi列表',
+            icon: "warn"
+          })
+          return;
+        }
+        console.log("android 获取wifi列表")
         wx.getSetting({
           success: res => {
             console.log(res)
-            if (res.authSetting['scope.userLocation']===undefined){
+            if (res.authSetting['scope.userLocation'] === undefined) {
               wx.authorize({
                 scope: "scope.userLocation",
                 success: () => {
@@ -80,7 +132,7 @@ Page({
                   })
                 }
               })
-            }else{
+            } else {
               if (!res.authSetting['scope.userLocation']) {
                 //被拒绝过，需要打开设置，让用户重新授权
                 wx.showModal({
@@ -115,6 +167,7 @@ Page({
         this.setData({
           currenwifi: res.wifi.SSID
         })
+        this.checkwifi5g();
       }
     })
   },
@@ -130,7 +183,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function() {
-
+    clearTimeout(this.data.wifilisttimeout)
   },
 
   /**
@@ -169,61 +222,41 @@ Page({
     })
   },
   toQrcode() {
-    if(this.data.bind){
+    if (this.data.bind) {
       //需要小程序登陆
-      this.loginToServer()
-    }else{
+      this.loginToServer(1)
+    } else {
       wx.navigateTo({
         url: '../qrcode/qrcode'
       })
     }
   },
-  loginToServer() {
+  loginToServer(type) {
     wx.showLoading({
       title: '获取数据',
     })
     wx.login({
       success: res => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        wx.request({
-          url: 'https://api1.q-links.net:10081/app/user/getidbythirdinfo', //仅为示例，并非真实的接口地址
-          method: 'POST',
-          data: {
-            'thirdType': 2,
-            'thirdAccessCode': res.code
-          },
-          success: res => {
-            wx.hideLoading();
-            if (res.statusCode == 200) {
-              console.log(res)
-              app.globalData.netconfig.u = res.data.data.uid+'';
-              this.setData({
-                uid: res.data.uid
-              })
-              wx.navigateTo({
-                url: '../qrcode/qrcode'
-              })
-            } else {
-              this.loginfail();
-            }
-          },
-          fail: error => {
-            wx.hideLoading();
-          }
-        })
+        if (type === 1) {
+          //先查询是否存在这个用户的id，然后决定是否注册（防止踢飞）
+          this.checkidfromeServer(res);
+        } else {
+          //已经检查过id，这里直接注册（登陆）
+          this.loginfromServer(res);
+        }
       },
-      fail:error=>{
+      fail: error => {
         //登陆失败，是否重新选择仅配网
         //如果登陆失败是因为没有账号，则提示注册
         wx.hideLoading();
         this.loginfail();
       },
-      complete:()=>{
+      complete: () => {
         wx.hideLoading()
       }
     })
   },
-  select(event){
+  select(event) {
     let ssid = event.currentTarget.dataset.wifi
     app.globalData.netconfig.s = ssid;
     this.setData({
@@ -232,19 +265,24 @@ Page({
     this.checkwifi5g();
   },
   onClose() {
-    this.setData({ showwifis: false });
+    this.setData({
+      showwifis: false
+    });
   },
-  changbind(){
-    this.setData({ bind: !this.data.bind });
+  changbind() {
+    this.setData({
+      bind: !this.data.bind
+    });
   },
   //取信息失败引导注册
-  loginerror(){
+  loginerror() {
     wx.showModal({
-      content: '你还没有注册，是否使用此微信号注册',
-      success(res) {
+      content: '你还没有注册，是否使用当前微信号注册',
+      success:res=> {
         if (res.confirm) {
           //转入注册
           //转入小程序登陆接口
+          this.loginToServer(2)
         } else if (res.cancel) {
           console.log('用户点击取消')
         }
@@ -253,13 +291,14 @@ Page({
   },
   //取信息失败引导仅配网
   loginfail() {
+    //引导注册
     wx.showModal({
-      content: '你还没有注册，是否仅配置网络?',
-      success:res=> {
+      content: '请求失败，是否仅配置网络?',
+      success: res => {
         if (res.confirm) {
           //修改绑定选项
           this.setData({
-            bind:false
+            bind: false
           })
           wx.navigateTo({
             url: '../qrcode/qrcode'
@@ -270,9 +309,9 @@ Page({
       }
     })
   },
-  checkwifi5g(){
+  checkwifi5g() {
     //预检5G，结果不一定准确
-    if (this.data.currenwifi.indexOf('5G')!=-1) {
+    if (this.data.currenwifi.indexOf('5G') != -1) {
       this.setData({
         errormessage: '设备不支持5G,当前选择的Wi-Fi有可能是5G'
       })
@@ -281,5 +320,76 @@ Page({
         errormessage: ''
       })
     }
+  },
+
+  // 发送 res.code 到后台换取 openId, sessionKey, unionId
+  checkidfromeServer(res) {
+    wx.request({
+      url: 'https://api1.q-links.net:10081/app/user/getidbythirdinfo', //仅为示例，并非真实的接口地址
+      method: 'POST',
+      data: {
+        'thirdType': 2,
+        'thirdAccessCode': res.code
+      },
+      success: res => {
+        wx.hideLoading();
+        console.log(res)
+        if (res.data.code==='0') {
+          app.globalData.netconfig.u = res.data.data.uid + '';
+          this.setData({
+            uid: res.data.data.uid
+          })
+          wx.navigateTo({
+            url: '../qrcode/qrcode'
+          })
+        } else if (res.data.code === '10901007'){
+          //没有获取到用户id,转注册
+          this.loginerror();
+        } else{
+          //其他错误
+          this.loginfail();
+        }
+      },
+      fail: error => {
+        wx.hideLoading();
+        this.loginfail();
+      }
+    })
+  },
+
+  loginfromServer(res) {
+    //调用登陆接口获取用户id
+    wx.request({
+      url: 'https://api1.q-links.net:10081/app/user/thirdlogin2', //仅为示例，并非真实的接口地址
+      method: 'POST',
+      header:app.globalData.header,
+      data: {
+        'thirdType': 2,
+        'thirdAccessCode': res.code,
+        'option': 'getAliyunIotInfo',
+        'appOs': 50,
+        'appToken': '97D0E83CD2ED48b0A511590B78EA3B0AC09B6234AFCF4bfa9B73BF8199BEA302',
+        'packageName': 'com.qmx.qimengxing'
+      },
+      success: res => {
+        wx.hideLoading();
+        console.log(res)
+        if (res.data.code=='0') {
+          app.globalData.netconfig.u = res.data.data.uid + '';
+          this.setData({
+            uid: res.data.data.uid
+          })
+          wx.navigateTo({
+            url: '../qrcode/qrcode'
+          })
+        } else {
+          this.loginfail();
+        }
+      },
+      fail: error => {
+        wx.hideLoading();
+        this.loginfail();
+      }
+    })
   }
 })

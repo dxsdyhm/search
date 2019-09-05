@@ -1,9 +1,9 @@
 <view class='container'>
   <van-cell-group>
-    <van-field value="{{ currenwifi }}" placeholder="Wi-Fi名" left-icon="contact" error-message="{{errormessage}}" border="{{ false }}" bind:change="onSSIDChange" >
-    <button slot="button" size="mini" type="primary" bindtap='getAllWifiOn'>Wi-Fi</button>
+    <van-field value="{{ currenwifi }}" placeholder="Wi-Fi名" left-icon="contact" error-message="{{errormessage}}" border="{{ false }}" bind:input="onSSIDChange" >
+    <button slot="button" size="mini" type="primary" bindtap='checkwifiopen'>Wi-Fi</button>
     </van-field>
-    <van-field value="{{ pwd }}" placeholder="请输入Wi-Fi密码" left-icon="contact" border="{{ false }}" bind:change="onPwdChange" />
+    <van-field value="{{ pwd }}" placeholder="请输入Wi-Fi密码" left-icon="contact" border="{{ false }}" bind:input="onPwdChange" />
   </van-cell-group>
   <van-row>
     <van-col offset="16" span="8">
@@ -12,7 +12,7 @@
   </van-row>
   <button class='btn' type="primary" bindtap="toQrcode">配网</button>
   <text wx:if="{{ showwifis }}" class="tiptext">请选择设备将要连接的Wi-Fi</text>
-  <scroll-view class="wificard" wx:if="{{ showwifis }}" scroll-y>
+  <scroll-view class="wificard" wx:if="{{ showwifis }}"  scroll-y>
     <van-cell wx:for="{{wifiList}}" wx:key="item.SSID" wx:for-item="item" bindtap='select' data-wifi='{{item.SSID}}' title="{{item.SSID}}">
       <van-icon wx:if="{{item.SSID===currenwifi}}" slot="right-icon" name="success" color="green" class="custom-icon" />
     </van-cell>
