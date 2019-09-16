@@ -31,7 +31,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    var res = wx.getSystemInfoSync();
+    var res = app.globalData.systemInfo
     var size = Math.min(res.windowWidth, res.windowHeight)
     this.createQrCode(this.data.content, 'mycanvas', size, size)
   },
@@ -73,6 +73,7 @@ Page({
   //获取临时缓存图片路径，存入data中
   canvasToTempImage: function (canvasId) {
     let that = this;
+    console.log(canvasId)
     wx.canvasToTempFilePath({
       canvasId,   // 这里canvasId即之前创建的canvas-id
       success: function (res) {
@@ -90,6 +91,7 @@ Page({
   createQrCode: function (content, canvasId, cavW, cavH) {
     //调用插件中的draw方法，绘制二维码图片
     Qr.api.draw(content, canvasId, cavW, cavH);
-    this.canvasToTempImage(canvasId);
+    Qr.api.draw(content, canvasId, cavW, cavH);
+    //this.canvasToTempImage(canvasId);
   },
 })

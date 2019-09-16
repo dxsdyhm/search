@@ -10,10 +10,11 @@ Page({
     pwd: '',
     wifiList: [],
     showwifis: false,
-    bind: false,
+    bind: true,
     uid: 0,
     errormessage: '',
-    wifilisttimeout:0
+    wifilisttimeout:0,
+    showtips:false
   },
 
   /**
@@ -81,6 +82,10 @@ Page({
         if (len <= 0) {
           wx.showToast({
             title: '周围没有搜索到wifi，请打开位置信息（GPS）开关',
+            icon: "none"
+          })
+          this.setData({
+            showtips:true
           })
         }
       }, 6000)
@@ -109,7 +114,7 @@ Page({
         if (app.isIos()){
           wx.showToast({
             title: '系统不可获取wifi列表',
-            icon: "warn"
+            icon: "none"
           })
           return;
         }

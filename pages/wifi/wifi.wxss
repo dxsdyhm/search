@@ -10,3 +10,9 @@
   display: block;
   margin: 32rpx 32rpx;
 }
+.mintext{
+  display: block;
+  margin: 32rpx 32rpx;
+  font-size: 11px;
+  color: #f00;
+}

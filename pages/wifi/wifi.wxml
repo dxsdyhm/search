@@ -1,9 +1,10 @@
 <view class='container'>
+<text wx:if="{{ showtips }}" class="mintext">* 如果搜索不到wifi,请在设置中打开位置信息（GPS）开关</text>
   <van-cell-group>
-    <van-field value="{{ currenwifi }}" placeholder="Wi-Fi名" left-icon="contact" error-message="{{errormessage}}" border="{{ false }}" bind:input="onSSIDChange" >
-    <button slot="button" size="mini" type="primary" bindtap='checkwifiopen'>Wi-Fi</button>
+    <van-field value="{{ currenwifi }}" placeholder="Wi-Fi名" left-icon="contact" error-message="{{errormessage}}" border="{{ true }}" bind:input="onSSIDChange" >
+    <van-button slot="button" size="mini" type="primary" bindtap='checkwifiopen'>Wi-Fi</van-button>
     </van-field>
-    <van-field value="{{ pwd }}" placeholder="请输入Wi-Fi密码" left-icon="contact" border="{{ false }}" bind:input="onPwdChange" />
+    <van-field value="{{ pwd }}" placeholder="请输入Wi-Fi密码" left-icon="contact" border="{{ true }}" bind:input="onPwdChange" />
   </van-cell-group>
   <van-row>
     <van-col offset="16" span="8">
